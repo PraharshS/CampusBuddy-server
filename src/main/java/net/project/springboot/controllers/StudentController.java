@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.project.springboot.models.Feedback;
 import net.project.springboot.models.Student;
 import net.project.springboot.models.TimeTable;
 import net.project.springboot.repository.StudentRepository;
@@ -24,6 +25,8 @@ public class StudentController {
 	private StudentRepository studentRepository;
 	@Autowired
 	private TimeTableRepository timeTableRepository;
+	@Autowired
+	private FeedbackRepository feedbackRepository;
 
 	// get all students
 	@GetMapping("/students")
@@ -47,5 +50,10 @@ public class StudentController {
 	@GetMapping("/student/time-table")
 	public List<TimeTable> getSchedule() {
 		return timeTableRepository.findAll();
+	}
+
+	@PostMapping("/student/feedback")
+	public void createFeedback(@RequestBody Feedback feedback) {
+		feedbackRepository.save(feedback);
 	}
 }
