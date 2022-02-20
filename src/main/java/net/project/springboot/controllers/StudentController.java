@@ -21,18 +21,23 @@ public class StudentController {
 	@Autowired
 	private StudentRepository studentRepository;
 
-//	get all students 
+	// get all students
 	@GetMapping("/students")
 	public List<Student> getAllStudents() {
 		return studentRepository.findAll();
 	}
 
-//	create student rest api 
+	// create student rest api
 
 	@PostMapping("/students")
 	public Student createStudent(@RequestBody Student student) {
-		System.out.println("created called");
 		return studentRepository.save(student);
+	}
+
+	// login student
+	@PostMapping("/students/login")
+	public List<Student> loginStudent(@RequestBody Student student) {
+		return studentRepository.findByEmailAndPassword(student.getEmail(), student.getPassword());
 	}
 
 }
