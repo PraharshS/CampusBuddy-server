@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.project.springboot.models.Student;
+import net.project.springboot.models.TimeTable;
 import net.project.springboot.repository.StudentRepository;
+import net.project.springboot.repository.TimeTableRepository;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -20,6 +22,8 @@ public class StudentController {
 
 	@Autowired
 	private StudentRepository studentRepository;
+	@Autowired
+	private TimeTableRepository timeTableRepository;
 
 	// get all students
 	@GetMapping("/students")
@@ -40,4 +44,8 @@ public class StudentController {
 		return studentRepository.findByEmailAndPassword(student.getEmail(), student.getPassword());
 	}
 
+	@GetMapping("/student/time-table")
+	public List<TimeTable> getSchedule() {
+		return timeTableRepository.findAll();
+	}
 }
