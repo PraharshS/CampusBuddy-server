@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.project.springboot.models.Feedback;
 import net.project.springboot.models.Student;
 import net.project.springboot.models.TimeTable;
+import net.project.springboot.repository.FeedbackRepository;
 import net.project.springboot.repository.StudentRepository;
 import net.project.springboot.repository.TimeTableRepository;
 
@@ -43,8 +44,12 @@ public class StudentController {
 
 	// login student
 	@PostMapping("/students/login")
-	public List<Student> loginStudent(@RequestBody Student student) {
-		return studentRepository.findByEmailAndPassword(student.getEmail(), student.getPassword());
+	public Student loginStudent(@RequestBody Student student) {
+		List<Student> studList = studentRepository.findByEmailAndPassword(student.getEmail(), student.getPassword());
+		if (studList.size() == 0) {
+			return new Student();
+		}
+		return studList.get(0);
 	}
 
 	@GetMapping("/student/time-table")
