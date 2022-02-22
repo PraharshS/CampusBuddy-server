@@ -1,7 +1,14 @@
 package net.project.springboot.controllers;
 
+import static net.project.springboot.encryption.Encryption.createSecretKey;
+import static net.project.springboot.encryption.Encryption.decrypt;
+import static net.project.springboot.encryption.Encryption.encrypt;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
-import java.util.Optional;
+
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +50,20 @@ public class StudentController {
 	// create student rest api
 
 	@PostMapping("/students")
-	public Student createStudent(@RequestBody Student student) {
+	public Student createStudent(@RequestBody Student student)
+			throws GeneralSecurityException, IOException {
+		String password = student.getPassword();
+		byte[] salt = new String("12345678").getBytes();
+		int iterationCount = 40000;
+		int keyLength = 128;
+		SecretKeySpec key = createSecretKey(password.toCharArray(), salt, iterationCount, keyLength);
+		String ogPassword = password;
+
+		String encryptedPass = encrypt(ogPassword, key);
+		student.setPassword(encryptedPass);
+
+		String decryptedPass = decrypt(encryptedPass, key);
+
 		return studentRepository.save(student);
 	}
 
