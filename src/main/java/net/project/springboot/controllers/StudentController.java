@@ -1,15 +1,20 @@
 package net.project.springboot.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.project.springboot.exception.ResourceNotFoundException;
 import net.project.springboot.models.Feedback;
 import net.project.springboot.models.Student;
 import net.project.springboot.models.TimeTable;
@@ -40,6 +45,23 @@ public class StudentController {
 	@PostMapping("/students")
 	public Student createStudent(@RequestBody Student student) {
 		return studentRepository.save(student);
+	}
+
+	@PutMapping("/students/{id}")
+	public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student updatedStudent) {
+		Student student = studentRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Student Does Not Exist with id : " + id));
+
+		student.setName(updatedStudent.getName());
+		student.setEmail(updatedStudent.getEmail());
+		student.setPassword(updatedStudent.getPassword());
+		student.setEnNumber(updatedStudent.getEnNumber());
+		student.setBranch(updatedStudent.getBranch());
+		student.setSemester(updatedStudent.getSemester());
+		student.setContactNumber(updatedStudent.getContactNumber());
+
+		studentRepository.save(student);
+		return ResponseEntity.ok(student);
 	}
 
 	// login student
