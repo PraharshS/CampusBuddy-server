@@ -1,19 +1,22 @@
 package net.project.springboot.controllers;
 
 import static net.project.springboot.encryption.Encryption.createSecretKey;
-import static net.project.springboot.encryption.Encryption.encrypt;
 import static net.project.springboot.encryption.Encryption.decrypt;
+import static net.project.springboot.encryption.Encryption.encrypt;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -89,6 +92,17 @@ public class StudentController {
 
 		studentRepository.save(student);
 		return ResponseEntity.ok(student);
+	}// delete student rest api
+
+	@DeleteMapping("/students/{id}")
+	public ResponseEntity<Map<String, Boolean>> deleteStudent(@PathVariable Long id) {
+		Student student = studentRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Student Does not exist with id : " + id));
+
+		studentRepository.delete(student);
+		Map<String, Boolean> response = new HashMap<>();
+		response.put("deleted", Boolean.TRUE);
+		return ResponseEntity.ok(response);
 	}
 
 	// login student
