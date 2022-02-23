@@ -1,10 +1,11 @@
 package net.project.springboot.controllers;
 
 import static net.project.springboot.encryption.Encryption.createSecretKey;
-import static net.project.springboot.encryption.Encryption.decrypt;
 import static net.project.springboot.encryption.Encryption.encrypt;
+import static net.project.springboot.encryption.Encryption.decrypt;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.project.springboot.encryption.GenerateEncryptionKey;
 import net.project.springboot.exception.ResourceNotFoundException;
 import net.project.springboot.models.Feedback;
 import net.project.springboot.models.Student;
@@ -53,28 +55,33 @@ public class StudentController {
 	public Student createStudent(@RequestBody Student student)
 			throws GeneralSecurityException, IOException {
 		String password = student.getPassword();
-		byte[] salt = new String("12345678").getBytes();
-		int iterationCount = 40000;
-		int keyLength = 128;
-		SecretKeySpec key = createSecretKey(password.toCharArray(), salt, iterationCount, keyLength);
-		String ogPassword = password;
 
-		String encryptedPass = encrypt(ogPassword, key);
+		SecretKeySpec hashKeySpec = createSecretKey(password.toCharArray(), GenerateEncryptionKey.salt,
+				GenerateEncryptionKey.iterationCount, GenerateEncryptionKey.keyLength);
+		student.setHashKeySpec(hashKeySpec);
+
+		String encryptedPass = encrypt(password, hashKeySpec);
 		student.setPassword(encryptedPass);
-
-		String decryptedPass = decrypt(encryptedPass, key);
 
 		return studentRepository.save(student);
 	}
 
 	@PutMapping("/students/{id}")
-	public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student updatedStudent) {
+	public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student updatedStudent)
+			throws UnsupportedEncodingException, GeneralSecurityException {
 		Student student = studentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Student Does Not Exist with id : " + id));
 
 		student.setName(updatedStudent.getName());
 		student.setEmail(updatedStudent.getEmail());
-		student.setPassword(updatedStudent.getPassword());
+
+		SecretKeySpec updatedHashKeySpec = createSecretKey(updatedStudent.getPassword().toCharArray(),
+				GenerateEncryptionKey.salt,
+				GenerateEncryptionKey.iterationCount, GenerateEncryptionKey.keyLength);
+		student.setHashKeySpec(updatedHashKeySpec);
+		String encryptedPass = encrypt(updatedStudent.getPassword(), updatedHashKeySpec);
+		student.setPassword(encryptedPass);
+
 		student.setEnNumber(updatedStudent.getEnNumber());
 		student.setBranch(updatedStudent.getBranch());
 		student.setSemester(updatedStudent.getSemester());
@@ -86,12 +93,23 @@ public class StudentController {
 
 	// login student
 	@PostMapping("/students/login")
-	public Student loginStudent(@RequestBody Student student) {
-		List<Student> studList = studentRepository.findByEmailAndPassword(student.getEmail(), student.getPassword());
-		if (studList.size() == 0) {
+	public Student loginStudent(@RequestBody Student loginStudent)
+			throws GeneralSecurityException, IOException {
+		// Find the student by email
+		List<Student> studentList = studentRepository.findByEmail(loginStudent.getEmail());
+		if (studentList.size() == 0) {
 			return new Student();
 		}
-		return studList.get(0);
+		// if found then , decrypt the encrypted password stored in db
+		Student student = studentList.get(0);
+		// hashKeySpec is different for every password
+		String decryptedPass = decrypt(student.getPassword(), student.getHashKeySpec());
+		student.setPassword(decryptedPass);
+		System.out.println("dec pass" + decryptedPass);
+		if (loginStudent.getPassword().equals(decryptedPass)) {
+			return student;
+		}
+		return new Student();
 	}
 
 	@GetMapping("/student/time-table")

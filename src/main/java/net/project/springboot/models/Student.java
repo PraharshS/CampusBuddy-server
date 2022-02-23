@@ -1,5 +1,6 @@
 package net.project.springboot.models;
 
+import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,6 +26,17 @@ public class Student {
 
 	@Column(name = "contact_number")
 	private String contactNumber;
+
+	@Column(name = "hash_key")
+	private SecretKeySpec hashKeySpec;
+
+	public SecretKeySpec getHashKeySpec() {
+		return hashKeySpec;
+	}
+
+	public void setHashKeySpec(SecretKeySpec hashKeySpec) {
+		this.hashKeySpec = hashKeySpec;
+	}
 
 	public long getId() {
 		return id;
