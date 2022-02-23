@@ -105,7 +105,6 @@ public class StudentController {
 		// hashKeySpec is different for every password
 		String decryptedPass = decrypt(student.getPassword(), student.getHashKeySpec());
 		student.setPassword(decryptedPass);
-		System.out.println("dec pass" + decryptedPass);
 		if (loginStudent.getPassword().equals(decryptedPass)) {
 			return student;
 		}
