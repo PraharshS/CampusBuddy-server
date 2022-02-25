@@ -22,6 +22,9 @@ public class Admin {
     @Column(name = "hash_key")
     private SecretKeySpec hashKeySpec;
 
+    public Admin() {
+    }
+
     public SecretKeySpec getHashKeySpec() {
         return hashKeySpec;
     }

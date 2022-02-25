@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.project.springboot.encryption.GenerateEncryptionKey;
 import net.project.springboot.models.Admin;
+import net.project.springboot.models.Notice;
 import net.project.springboot.models.Student;
 import net.project.springboot.repository.AdminRepository;
+import net.project.springboot.repository.NoticeRepository;
 import net.project.springboot.repository.StudentRepository;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -33,6 +35,8 @@ public class AdminController {
     private AdminRepository adminRepository;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private NoticeRepository noticeRepository;
 
     // CREATE ADMIN
     @PostMapping("/admins")
@@ -80,6 +84,17 @@ public class AdminController {
             student.setPassword(decryptedPass);
         }
         return studentList;
+    }
+
+    @GetMapping("/admin/all-notices")
+    public List<Notice> getAllNotices() {
+        List<Notice> noticeList = noticeRepository.findAll();
+        return noticeList;
+    }
+
+    @PostMapping("/admin/notice")
+    public void createNotice(@RequestBody Notice notice) {
+        noticeRepository.save(notice);
     }
 
 }

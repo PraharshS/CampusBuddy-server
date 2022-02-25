@@ -20,6 +20,9 @@ public class Feedback {
     private String email;
     private String message;
 
+    public Feedback() {
+    }
+
     public long getId() {
         return id;
     }

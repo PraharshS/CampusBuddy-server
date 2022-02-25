@@ -34,6 +34,9 @@ public class Student {
 		return hashKeySpec;
 	}
 
+	public Student() {
+	}
+
 	public void setHashKeySpec(SecretKeySpec hashKeySpec) {
 		this.hashKeySpec = hashKeySpec;
 	}
