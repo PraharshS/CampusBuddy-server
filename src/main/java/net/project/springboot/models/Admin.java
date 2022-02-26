@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "admins")
 public class Admin {
@@ -22,9 +24,7 @@ public class Admin {
     @Column(name = "hash_key")
     private SecretKeySpec hashKeySpec;
 
-    public Admin() {
-    }
-
+    @JsonIgnore
     public SecretKeySpec getHashKeySpec() {
         return hashKeySpec;
     }

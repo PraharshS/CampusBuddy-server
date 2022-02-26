@@ -8,20 +8,21 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "notices")
 public class Notice {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private Admin admin;
 
     private String type;
     private String description;
-
-    public Notice() {
-    }
 
     public long getId() {
         return id;

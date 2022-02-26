@@ -1,8 +1,8 @@
 package net.project.springboot.controllers;
 
 import static net.project.springboot.encryption.Encryption.createSecretKey;
-import static net.project.springboot.encryption.Encryption.encrypt;
 import static net.project.springboot.encryption.Encryption.decrypt;
+import static net.project.springboot.encryption.Encryption.encrypt;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,10 +29,12 @@ import net.project.springboot.encryption.GenerateEncryptionKey;
 import net.project.springboot.exception.ResourceNotFoundException;
 import net.project.springboot.models.Feedback;
 import net.project.springboot.models.HashStudent;
+import net.project.springboot.models.Notice;
 import net.project.springboot.models.Student;
 import net.project.springboot.models.TimeTable;
 import net.project.springboot.repository.FeedbackRepository;
 import net.project.springboot.repository.HashStudentRepository;
+import net.project.springboot.repository.NoticeRepository;
 import net.project.springboot.repository.StudentRepository;
 import net.project.springboot.repository.TimeTableRepository;
 
@@ -49,6 +51,8 @@ public class StudentController {
 	private FeedbackRepository feedbackRepository;
 	@Autowired
 	private HashStudentRepository hashStudentRepository;
+	@Autowired
+	private NoticeRepository noticeRepository;
 
 	// get all students
 	@GetMapping("/students")
@@ -140,6 +144,12 @@ public class StudentController {
 	@GetMapping("/student/time-table")
 	public List<TimeTable> getSchedule() {
 		return timeTableRepository.findAll();
+	}
+
+	@GetMapping("/student/notices")
+	public List<Notice> getNoticeList() {
+		System.out.println("all notice hit");
+		return noticeRepository.findAll();
 	}
 
 	@PostMapping("/student/feedback")
