@@ -1,12 +1,16 @@
 package net.project.springboot.models;
 
-import javax.crypto.spec.SecretKeySpec;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "students")
@@ -27,18 +31,16 @@ public class Student {
 	@Column(name = "contact_number")
 	private String contactNumber;
 
-	@Column(name = "hash_key")
-	private SecretKeySpec hashKeySpec;
+	@JsonIgnore
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "student")
+	private HashStudent hStudent;
 
-	public SecretKeySpec getHashKeySpec() {
-		return hashKeySpec;
+	public void sethStudent(HashStudent hStudent) {
+		this.hStudent = hStudent;
 	}
 
-	public Student() {
-	}
-
-	public void setHashKeySpec(SecretKeySpec hashKeySpec) {
-		this.hashKeySpec = hashKeySpec;
+	public HashStudent gethStudent() {
+		return hStudent;
 	}
 
 	public long getId() {
@@ -75,6 +77,13 @@ public class Student {
 
 	public String getEnNumber() {
 		return enNumber;
+	}
+
+	@Override
+	public String toString() {
+		return "Student [branch=" + branch + ", contactNumber=" + contactNumber + ", email=" + email + ", enNumber="
+				+ enNumber + ", hStudent=" + hStudent + ", id=" + id + ", name=" + name + ", password=" + password
+				+ ", semester=" + semester + "]";
 	}
 
 	public void setEnNumber(String enNumber) {
