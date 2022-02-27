@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "notices")
@@ -17,8 +17,8 @@ public class Notice {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "notices", "hibernateLazyInitializer" })
     private Admin admin;
 
     private String type;

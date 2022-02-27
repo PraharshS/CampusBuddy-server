@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "feedbacks")
 public class Feedback {
@@ -15,13 +17,11 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "feedbacks", "hibernateLazyInitializer" })
     private Student student;
 
     private String email;
     private String message;
-
-    public Feedback() {
-    }
 
     public long getId() {
         return id;

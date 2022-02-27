@@ -20,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.project.springboot.encryption.GenerateEncryptionKey;
 import net.project.springboot.models.Admin;
+import net.project.springboot.models.Feedback;
 import net.project.springboot.models.Notice;
 import net.project.springboot.models.Student;
 import net.project.springboot.repository.AdminRepository;
+import net.project.springboot.repository.FeedbackRepository;
 import net.project.springboot.repository.NoticeRepository;
 import net.project.springboot.repository.StudentRepository;
 
@@ -37,6 +39,8 @@ public class AdminController {
     private StudentRepository studentRepository;
     @Autowired
     private NoticeRepository noticeRepository;
+    @Autowired
+    private FeedbackRepository feedbackRepository;
 
     // CREATE ADMIN
     @PostMapping("/admins")
@@ -97,4 +101,9 @@ public class AdminController {
         noticeRepository.save(notice);
     }
 
+    @GetMapping("/admin/feedbacks")
+    public List<Feedback> getAllFeedbacks() {
+        List<Feedback> feedbackList = feedbackRepository.findAll();
+        return feedbackList;
+    }
 }

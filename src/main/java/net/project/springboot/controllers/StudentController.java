@@ -28,12 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 import net.project.springboot.encryption.GenerateEncryptionKey;
 import net.project.springboot.exception.ResourceNotFoundException;
 import net.project.springboot.models.Feedback;
-import net.project.springboot.models.HashStudent;
 import net.project.springboot.models.Notice;
 import net.project.springboot.models.Student;
 import net.project.springboot.models.TimeTable;
 import net.project.springboot.repository.FeedbackRepository;
-import net.project.springboot.repository.HashStudentRepository;
 import net.project.springboot.repository.NoticeRepository;
 import net.project.springboot.repository.StudentRepository;
 import net.project.springboot.repository.TimeTableRepository;
@@ -50,8 +48,6 @@ public class StudentController {
 	@Autowired
 	private FeedbackRepository feedbackRepository;
 	@Autowired
-	private HashStudentRepository hashStudentRepository;
-	@Autowired
 	private NoticeRepository noticeRepository;
 
 	// get all students
@@ -67,18 +63,14 @@ public class StudentController {
 			throws GeneralSecurityException, IOException {
 		String password = student.getPassword();
 
-		HashStudent hStudent = new HashStudent();
 		SecretKeySpec hashKeySpec = createSecretKey(password.toCharArray(), GenerateEncryptionKey.salt,
 				GenerateEncryptionKey.iterationCount, GenerateEncryptionKey.keyLength);
 		String encryptedPass = encrypt(password, hashKeySpec);
 
-		hStudent.setStudent(student);
-		hStudent.setHashKeySpec(hashKeySpec);
-		hStudent.setHashedPassword(encryptedPass);
+		student.setHashKeySpec(hashKeySpec);
+		student.setPassword(encryptedPass);
 
-		Student createdStudent = studentRepository.save(student);
-		hashStudentRepository.save(hStudent);
-		return createdStudent;
+		return studentRepository.save(student);
 	}
 
 	@PutMapping("/students/{id}")
@@ -87,17 +79,12 @@ public class StudentController {
 		Student student = studentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Student Does Not Exist with id : " + id));
 
-		student.setName(updatedStudent.getName());
-		student.setEmail(updatedStudent.getEmail());
-		student.setPassword(updatedStudent.getPassword());
-		SecretKeySpec updatedHashKeySpec = createSecretKey(updatedStudent.getPassword().toCharArray(),
+		SecretKeySpec HashKeySpec = createSecretKey(updatedStudent.getPassword().toCharArray(),
 				GenerateEncryptionKey.salt,
 				GenerateEncryptionKey.iterationCount, GenerateEncryptionKey.keyLength);
-		String encryptedPass = encrypt(updatedStudent.getPassword(), updatedHashKeySpec);
-		HashStudent updatedHStudent = hashStudentRepository.findByStudentId(student.getId()).get(0);
-		updatedHStudent.setHashKeySpec(updatedHashKeySpec);
-		updatedHStudent.setHashedPassword(encryptedPass);
-		hashStudentRepository.save(updatedHStudent);
+		String encryptedPass = encrypt(updatedStudent.getPassword(), HashKeySpec);
+		student.setPassword(encryptedPass);
+
 		student.setEnNumber(updatedStudent.getEnNumber());
 		student.setBranch(updatedStudent.getBranch());
 		student.setSemester(updatedStudent.getSemester());
@@ -129,11 +116,7 @@ public class StudentController {
 		}
 		// if found then , decrypt the encrypted password stored in db
 		Student student = studentList.get(0);
-
-		// extract the hashkey from the related hash record in HashStudent
-		HashStudent hStudent = hashStudentRepository.findByStudentId(student.getId()).get(0);
-
-		String decryptedPass = decrypt(hStudent.getHashedPassword(), hStudent.getHashKeySpec());
+		String decryptedPass = decrypt(student.getPassword(), student.getHashKeySpec());
 
 		if (decryptedPass.equals(loginStudent.getPassword())) {
 			return student;
@@ -148,7 +131,6 @@ public class StudentController {
 
 	@GetMapping("/student/notices")
 	public List<Notice> getNoticeList() {
-		System.out.println("all notice hit");
 		return noticeRepository.findAll();
 	}
 

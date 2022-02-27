@@ -20,11 +20,10 @@ public class Admin {
     private String name;
     private String email;
     private String password;
-
+    @JsonIgnore
     @Column(name = "hash_key")
     private SecretKeySpec hashKeySpec;
 
-    @JsonIgnore
     public SecretKeySpec getHashKeySpec() {
         return hashKeySpec;
     }
