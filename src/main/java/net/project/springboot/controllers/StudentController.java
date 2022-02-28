@@ -78,13 +78,8 @@ public class StudentController {
 			throws UnsupportedEncodingException, GeneralSecurityException {
 		Student student = studentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Student Does Not Exist with id : " + id));
-
-		SecretKeySpec HashKeySpec = createSecretKey(updatedStudent.getPassword().toCharArray(),
-				GenerateEncryptionKey.salt,
-				GenerateEncryptionKey.iterationCount, GenerateEncryptionKey.keyLength);
-		String encryptedPass = encrypt(updatedStudent.getPassword(), HashKeySpec);
-		student.setPassword(encryptedPass);
-
+		student.setName(updatedStudent.getName());
+		student.setEmail(updatedStudent.getEmail());
 		student.setEnNumber(updatedStudent.getEnNumber());
 		student.setBranch(updatedStudent.getBranch());
 		student.setSemester(updatedStudent.getSemester());
@@ -117,7 +112,7 @@ public class StudentController {
 		// if found then , decrypt the encrypted password stored in db
 		Student student = studentList.get(0);
 		String decryptedPass = decrypt(student.getPassword(), student.getHashKeySpec());
-
+		student.setPassword(decryptedPass);
 		if (decryptedPass.equals(loginStudent.getPassword())) {
 			return student;
 		}

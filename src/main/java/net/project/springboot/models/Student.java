@@ -20,7 +20,6 @@ public class Student {
 
 	private String name;
 	private String email;
-
 	private String password;
 
 	@Column(name = "enrollment_number")

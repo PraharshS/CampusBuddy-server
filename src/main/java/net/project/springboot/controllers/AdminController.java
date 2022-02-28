@@ -82,11 +82,6 @@ public class AdminController {
     @GetMapping("/admins/allStudents")
     public List<Student> getAllStudents() throws GeneralSecurityException, IOException {
         List<Student> studentList = studentRepository.findAll();
-        for (Student student : studentList) {
-            // String encryptedPass = student.getPassword();
-            // String decryptedPass = decrypt(encryptedPass, student.getHashKeySpec());
-            // student.setPassword(decryptedPass);
-        }
         return studentList;
     }
 
