@@ -11,6 +11,7 @@ import java.util.List;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import net.project.springboot.encryption.GenerateEncryptionKey;
 import net.project.springboot.models.Admin;
@@ -22,6 +23,7 @@ import net.project.springboot.repository.FeedbackRepository;
 import net.project.springboot.repository.NoticeRepository;
 import net.project.springboot.repository.StudentRepository;
 
+@Service
 public class AdminService {
     @Autowired
     private AdminRepository adminRepository;
